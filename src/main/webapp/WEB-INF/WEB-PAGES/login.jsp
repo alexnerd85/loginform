@@ -46,7 +46,7 @@
                     }, 500);
                 }
 
-                function checkLength(o, n, min, max) {
+                function checkLength(o, min, max) {
                     if (o.val().length > max || o.val().length < min) {
                         o.addClass("ui-state-error");
                         updateTips("Длина поля должна быть между " +
@@ -78,7 +78,6 @@
                                 o.addClass("ui-state-error");
                                 updateTips(n);
                             } else {
-                                alert('in ajax');
                                 isUnique = true;
                             }
                         },
@@ -100,7 +99,6 @@
                     valid = valid && checkLogin(login, "Данный логин уже зарегестрирован, выберите другой");
                     valid = valid && checkRegexp(password, /^([0-9a-zA-Z])+$/, "Допустимые символы для пароля: a-z A-Z 0-9");
 
-                    alert(valid);
                     if (valid) {
                         $.ajax({
                         url: "${pageContext.request.contextPath}/user/add",
