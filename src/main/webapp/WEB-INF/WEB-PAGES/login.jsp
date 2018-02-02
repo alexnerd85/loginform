@@ -46,7 +46,7 @@
                     }, 500);
                 }
 
-                function checkLength(o, min, max) {
+                function checkLength(o, n, min, max) {
                     if (o.val().length > max || o.val().length < min) {
                         o.addClass("ui-state-error");
                         updateTips("Длина поля должна быть между " +

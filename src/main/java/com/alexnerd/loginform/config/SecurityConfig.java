@@ -28,8 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login").permitAll()
                 .usernameParameter("ssoId").passwordParameter("password")
-                .and().csrf()
-                .and().exceptionHandling().accessDeniedPage("/Access_Denied");
+                .and().csrf();
     }
 
     @Override
@@ -45,7 +44,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         for(Map<String, Object> user : usersDB){
              users.put((String)user.get("username"), (String)user.get("password")+",USER,enabled");
         }   
-        //users.put("user", "password,ROLE_USER,enabled"); //add whatever other user you need
         return new InMemoryUserDetailsManager(users);
     }
 

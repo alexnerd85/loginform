@@ -1,10 +1,3 @@
-/*
- *   Created on : 21.01.2018, 21:59:23
- *   Author     : Popov Aleksey
- *   Site       : alexnerd.com
- *   Email      : alexnerd85@gmail.com
- *   GitHub     : https://github.com/alexnerd85/EmployeeTimeAccount
- */
 
 package com.alexnerd.loginform.config;
 
@@ -27,8 +20,6 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
         @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        //registry.addViewController("/").setViewName("app/main");
-        //registry.addViewController("/").setViewName("index");
         registry.addViewController("/").setViewName("main");
     }
 
