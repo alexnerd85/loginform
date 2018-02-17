@@ -90,8 +90,8 @@
                     var valid = true;
                     allFields.removeClass("ui-state-error");
 
-                    valid = valid && checkLength(login, "reglogin", 1, 254);
-                    valid = valid && checkLength(password, "regpassword", 1, 254);
+                    valid = valid && checkLength(login, "reglogin", 1, 45);
+                    valid = valid && checkLength(password, "regpassword", 1, 45);
                     valid = valid && checkLength(wage, "regwage", 0, 16);
 
                     valid = valid && checkRegexp(login, /^([a-zA-Z])([0-9a-zA-Z_])+$/, "Логин должен начинаться с латинской буквы и может состоять из латинских букв, цифр и нижнего подчеркивания");
