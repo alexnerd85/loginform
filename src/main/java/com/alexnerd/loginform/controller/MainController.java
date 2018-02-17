@@ -33,7 +33,7 @@ public class MainController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String mainPage(ModelMap model) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        List<Map <String, Object>> users = jdbcTemplate.queryForList("SELECT * FROM USER");
+        List<Map <String, Object>> users = jdbcTemplate.queryForList("SELECT * FROM USERS");
         model.addAttribute("users", users);
         //throw new RuntimeException("Test");
         return "main";

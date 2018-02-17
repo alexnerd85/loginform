@@ -5,9 +5,6 @@
  */
 package com.alexnerd.loginform.controller;
 
-import com.alexnerd.loginform.data.User;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.jooq.DSLContext;
@@ -15,31 +12,37 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import static org.jooq.impl.DSL.*;
 
 @RestController
 @RequestMapping("user")
-public class SimpleSecurityController {
+public class SimpleUserManagmentController {
 
     @Autowired
     private DataSource dataSource;
 
-    private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
-
-    @Autowired
-    public SimpleSecurityController(InMemoryUserDetailsManager inMemoryUserDetailsManager) {
-        this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
-    }
-
     @RequestMapping(value = "checklogin", method = RequestMethod.GET)
     public boolean userExists(@RequestParam("username") String username) {
-        return inMemoryUserDetailsManager.userExists(username);
+        //return inMemoryUserDetailsManager.userExists(username);
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+        DSLContext create = DSL.using(SQLDialect.HSQLDB);
+
+        String sql = create.select(DSL.field("USERNAME"))
+                .from(DSL.table("USERS"))
+                .where(DSL.field("USERNAME").eq(DSL.inline(username))).getSQL();
+
+        int i = jdbcTemplate.queryForList(sql).size();
+
+        if (i > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     @RequestMapping(value = "add", method = RequestMethod.GET)
@@ -49,17 +52,23 @@ public class SimpleSecurityController {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
         DSLContext create = DSL.using(SQLDialect.HSQLDB);
-        String sql = create
-                .insertInto(DSL.table("USER"))
-                .values("USERNAME", username)
-                .values("PASSWORD", password)
-                .values("WAGE", wage.orElse(0.0)).getSQL();
+        String sql1 = create
+                .insertInto(DSL.table("USERS"), DSL.field("USERNAME"),
+                        DSL.field("PASSWORD"), DSL.field("WAGE"))
+                .values(DSL.inline(username), DSL.inline(password), 
+                        DSL.inline(wage.orElse(0.0))).getSQL();
+        String sql2 = create
+                .insertInto(DSL.table("USER_ROLES"), DSL.field("USERNAME"),
+                        DSL.field("ROLE"))
+                .values(DSL.inline(username), DSL.inline("ROLE_USER")).getSQL();
 
-        int i = jdbcTemplate.update(sql);
-        if (i > 0) {
-            inMemoryUserDetailsManager.createUser(new User(username, password, new ArrayList<GrantedAuthority>()));
+        int i = jdbcTemplate.update(sql1);
+        int j = jdbcTemplate.update(sql2);
+
+        if (i > 0 && j > 0) {
             return true;
         }
         return false;
+
     }
 }

@@ -28,14 +28,13 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/lib/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/lib/Semantic-UI-CSS-master/semantic.js"></script>
         <script type="text/javascript">
-            
             $(function () {
                 var dialog, form,
                         login = $("#reglogin"),
                         password = $("#regpassword"),
                         wage = $("#regwage"),
                         allFields = $([]).add(login).add(password).add(wage),
-                        tips = $(".validateTips");                      
+                        tips = $(".validateTips");
 
                 function updateTips(t) {
                     tips
@@ -94,29 +93,29 @@
                     valid = valid && checkLength(login, "reglogin", 1, 254);
                     valid = valid && checkLength(password, "regpassword", 1, 254);
                     valid = valid && checkLength(wage, "regwage", 0, 16);
-                    
+
                     valid = valid && checkRegexp(login, /^([a-zA-Z])([0-9a-zA-Z_])+$/, "Логин должен начинаться с латинской буквы и может состоять из латинских букв, цифр и нижнего подчеркивания");
                     valid = valid && checkLogin(login, "Данный логин уже зарегестрирован, выберите другой");
                     valid = valid && checkRegexp(password, /^([0-9a-zA-Z])+$/, "Допустимые символы для пароля: a-z A-Z 0-9");
 
                     if (valid) {
                         $.ajax({
-                        url: "${pageContext.request.contextPath}/user/add",
-                        type: "GET",
-                        data: {username: login.val(),
-                               password: password.val(),
-                               wage: wage.val()},
-                        success: function (data) {
-                            if ($.trim(data) === 'false') {                                
-                                valid = false;
-                            } else {
-                                valid = true
-                            }
-                        },
-                        dataType: "text",
-                        async: true
-                    });                        
-                        if(valid){
+                            url: "${pageContext.request.contextPath}/user/add",
+                            type: "GET",
+                            data: {username: login.val(),
+                                password: password.val(),
+                                wage: wage.val()},
+                            success: function (data) {
+                                if ($.trim(data) === 'false') {
+                                    valid = false;
+                                } else {
+                                    valid = true
+                                }
+                            },
+                            dataType: "text",
+                            async: true
+                        });
+                        if (valid) {
                             form[ 0 ].reset();
                             allFields.removeClass("ui-state-error");
                             updateTips("Пользователь зарегестрирован!");
@@ -146,13 +145,24 @@
                     event.preventDefault();
                     addUser();
                 });
-                $(document).on("click", "a", function(){
-                     dialog.dialog("open");});
+                $(document).on("click", "a", function () {
+                    dialog.dialog("open");
                 });
+            });
+            $(function () {
+                $('.message .close')
+                        .on('click', function () {
+                            $(this)
+                                    .closest('.message')
+                                    .transition('fade')
+                                    ;
+                        });
+            });
+
         </script>
     </head>
-    <body>
-        <div class="page-login">
+    <body style="background-color: #ECF0F1;">
+        <div class="page-login" style="margin-top: 25px;">
             <div class="ui centered grid container">
                 <div class="nine wide column">
                     <c:if test="${param.error != null}">
@@ -169,54 +179,58 @@
                     <c:if test="${param.logout != null}">
                         <div class="ui success message">
                             <i class="close icon"></i>
-                            <p>Вы успешно вышли из программы.</p>
+                            <div class="header">
+                                Вы успешно вышли из программы.
+                            </div>
+                            <p>Для того, чтобы вновь вернуться в программу введите логин и пароль в форме ниже</p>
                         </div>
-                    </div>
-                </c:if>
 
-                <div class="ui fluid card">
-                    <div class="content">
-                        <c:url var="loginUrl" value="/login" />
-                        <form class="ui form" action="${loginUrl}" method="POST">
-                            <div class="field">
-                                <label>Логин</label>
-                                <input type="text" id="username" name="ssoId" placeholder="Введите Логин" required>
-                            </div>
-                            <div class="field">
-                                <label>Пароль</label>
-                                <input type="password" id="password" name="password" placeholder="Введите пароль" required>
-                            </div>
-                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                            <div class="aligned right aligned grid">
-                                <button class="ui primary labeled icon button" type="submit">
-                                    <i class="unlock alternate icon"></i>
-                                    Вход
-                                </button>
-                            </div>
-                        </form>
-                        <br/>
-                        <div class="aligned right aligned grid">
-                            <a id="Reg">Регистрация</a>
+                    </c:if>
+
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <c:url var="loginUrl" value="/login" />
+                            <form class="ui form" action="${loginUrl}" method="POST">
+                                <div class="field">
+                                    <label>Логин</label>
+                                    <input type="text" id="username" name="username" placeholder="Введите Логин" required>
+                                </div>
+                                <div class="field">
+                                    <label>Пароль</label>
+                                    <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+                                </div>
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                                <div class="aligned right aligned grid">
+                                    <button class="ui primary labeled icon button" type="submit">
+                                        <i class="unlock alternate icon"></i>
+                                        Вход
+                                    </button>
+                                    <br/>
+                                    <br/>
+                                    <div class="aligned right aligned grid">
+                                        <a id="Reg">Регистрация</a>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="dialog-form" title="Регистрация">
-        <p class="validateTips">Все поля обязательны, кроме баланса.</p> 
-        <form action="/registration" method="post">
-            <fieldset>
-                <label for="login">Логин</label>
-                <input type="text" name="reglogin" id="reglogin" placeholder="Введите логин" class="text ui-widget-content ui-corner-all">
-                <label for="password">Пароль</label>
-                <input type="password" name="regpassword" id="regpassword" class="text ui-widget-content ui-corner-all">
-                <label for="name">Баланс</label>
-                <input type="text" name="regwage" id="regwage" placeholder="Введите баланс" class="text ui-widget-content ui-corner-all">
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div> 
-</body>
+        <div id="dialog-form" style="display:none;" title="Регистрация">
+            <p class="validateTips">Все поля обязательны, кроме баланса.</p> 
+            <form action="/registration" method="post">
+                <fieldset>
+                    <label for="login">Логин</label>
+                    <input type="text" name="reglogin" id="reglogin" placeholder="Введите логин" class="text ui-widget-content ui-corner-all">
+                    <label for="password">Пароль</label>
+                    <input type="password" name="regpassword" id="regpassword" class="text ui-widget-content ui-corner-all">
+                    <label for="name">Баланс</label>
+                    <input type="text" name="regwage" id="regwage" placeholder="Введите баланс" class="text ui-widget-content ui-corner-all">
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div> 
+    </body>
 </html>
 
